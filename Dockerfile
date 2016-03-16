@@ -1,15 +1,14 @@
-FROM fedora:22
-MAINTAINER mscherer@redhat.com
-WORKDIR /tmp
-RUN yum upgrade -y
-RUN yum install -y tar libcurl-devel zlib-devel patch rubygem-bundler ruby-devel git make gcc gcc-c++
+FROM fedora:23
+MAINTAINER jberkus@redhat.com
 
-ADD config.rb /tmp/config.rb
-#ADD data /tmp/data
-ADD Gemfile  /tmp/Gemfile
-ADD Gemfile.lock /tmp/Gemfile.lock
-ADD lib /tmp/lib
-#ADD source /tmp/source
+LABEL RUN docker run -dt -p 4567:4567 --privileged -v "$(pwd)":/workdir middleman
+
+RUN dnf install -y libcurl-devel zlib-devel rubygem-bundler ruby-devel git tar patch make gcc gcc-c++ redhat-rpm-config && dnf clean all && mkdir /workdir
+
+WORKDIR /workdir
+
+ADD Gemfile  /workdir/Gemfile
+ADD Gemfile.lock /workdir/Gemfile.lock
 
 RUN bundle install
 
